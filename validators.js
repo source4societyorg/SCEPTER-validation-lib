@@ -10,4 +10,4 @@ const validators = {
   phone: (value) => /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(value)
 };
 
-export default validators;
+module.exports = validators
