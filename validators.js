@@ -7,7 +7,8 @@ const validators = {
   website: (value) => /^(http|https):\/\/[^ "]+$/.test(value),
   pdf: (value) => /\.pdf$/.test(value),
   matchField: (value, value2) => value === value2,
-  phone: (value) => /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(value)
+  phone: (value) => /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(value),
+  ifOneOf: (value, options) => options.indexOf(value) > -1
 };
 
 module.exports = validators
