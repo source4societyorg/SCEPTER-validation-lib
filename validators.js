@@ -48,7 +48,7 @@ const validate = (values, validations, injectValidateField) => {
   const validateField = utilities.valueOrDefault(injectValidateField, validateFieldFunction)
   let errors = {}
   Object.keys(validations).forEach((property) => {
-    errors = validateField(errors, values[property], validations[property])
+    errors = validateField(errors, validations[property], values[property])
   })
   return errors
 }
