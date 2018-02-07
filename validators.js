@@ -17,11 +17,12 @@ const validateFieldFunction = (errors, validations, value, property, injectPerfo
     return errors
   }
 
+  let updatedErrors = Object.assign({}, errors)
   validations.forEach((index) => {
-    errors = performValidation(errors, validations[index], value, property)
+    updatedErrors = performValidation(errors, validations[index], value, property)
   })
 
-  return errors
+  return updatedErrors
 }
 
 const performValidationFunction = (errors, validatorItem, value, property) => {
@@ -32,13 +33,15 @@ const performValidationFunction = (errors, validatorItem, value, property) => {
     return errors
   }
 
-  errors[property] = utilities.ifTrueElseDefault(
-    utilities.isNotEmpty(errors[property]),
-    errors[property] += ' ' + validatorItem.invalidMessage,
+  const updatedErrors = Object.assign({}, errors)
+
+  updatedErrors[property] = utilities.ifTrueElseDefault(
+    utilities.isNotEmpty(updatedErrors[property]),
+    updatedErrors[property] += ` ${validatorItem.invalidMessage}`,
     validatorItem.invalidMessage
   )
 
-  return errors
+  return updatedErrors
 }
 
 const validate = (values, validations, injectValidateField) => {
