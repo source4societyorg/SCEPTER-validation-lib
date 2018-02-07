@@ -1,15 +1,66 @@
-const validators = {
-  required: (value) => (typeof value !== 'undefined' && value !== null && value !== ''),
-  email: (value) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/.test(value),
-  integer: (value) => /^\-?(0|[1-9]\d*)$/.test(value),
-  decimal: (value) => !isNaN(parseFloat(value)) && isFinite(value),
-  nonegative: (value) => parseInt(value) >= 0,
-  website: (value) => /^(http|https):\/\/[^ "]+$/.test(value),
-  pdf: (value) => /\.pdf$/.test(value),
-  matchField: (value, value2) => value === value2,
-  phone: (value) => /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(value),
-  ifOneOf: (value, options) => options.indexOf(value) > -1,
-  custom: (value, regex) => regex.test(value)
-};
+const utilities = require('@source4society/scepter-utility-lib')
+const required = (value) => utilities.isNotEmpty(value)
+const email = (value) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/.test(value)
+const integer = (value) => /^-?(0|[1-9]\d*)$/.test(value)
+const decimal = (value) => !isNaN(parseFloat(value)) && isFinite(value)
+const nonegative = (value) => parseFloat(value) >= 0
+const website = (value) => /^(http|https):\/\/[^ "]+$/.test(value)
+const pdf = (value) => /\.pdf$/.test(value)
+const matchField = (value, value2) => value === value2
+const phone = (value) => /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(value)
+const ifOneOf = (value, options) => options.indexOf(value) > -1
+const custom = (value, regex) => regex.test(value)
 
-module.exports = validators
+const validateFieldFunction = (errors, validations, value, property, injectPerformValidation) => {
+  const performValidation = utilities.valueOrDefault(injectPerformValidation, performValidationFunction)
+  if (utilities.isEmpty(validations)) {
+    return errors
+  }
+
+  validations.forEach((index) => {
+    errors = performValidation(errors, validations[index], value, property)
+  })
+
+  return errors
+}
+
+const performValidationFunction = (errors, validatorItem, value, property) => {
+  if ((validatorItem.ifNotEmpty === true && utilities.isEmpty(value)) || (utilities.isEmpty(validatorItem.validator))) {
+    return errors
+  }
+  if (validatorItem.validator(value, ...utilities.valueOrDefault(validatorItem.parameters, []))) {
+    return errors
+  }
+
+  errors[property] = utilities.ifTrueElseDefault(
+    utilities.isNotEmpty(errors[property]),
+    errors[property] += ' ' + validatorItem.invalidMessage,
+    validatorItem.invalidMessage
+  )
+
+  return errors
+}
+
+const validate = (values, validations, injectValidateField) => {
+  const validateField = utilities.valueOrDefault(injectValidateField, validateFieldFunction)
+  let errors = {}
+  Object.keys(validations).forEach((property) => {
+    errors = validateField(errors, values[property], validations[property])
+  })
+  return errors
+}
+
+module.exports.required = required
+module.exports.email = email
+module.exports.integer = integer
+module.exports.decimal = decimal
+module.exports.nonegative = nonegative
+module.exports.website = website
+module.exports.pdf = pdf
+module.exports.matchField = matchField
+module.exports.phone = phone
+module.exports.ifOneOf = ifOneOf
+module.exports.custom = custom
+module.exports.validate = validate
+module.exports.validateFieldFunction = validateFieldFunction
+module.exports.performValidationFunction = performValidationFunction
