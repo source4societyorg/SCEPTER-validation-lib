@@ -18,8 +18,8 @@ const validateFieldFunction = (errors, validations, value, property, injectPerfo
   }
 
   let updatedErrors = Object.assign({}, errors)
-  validations.forEach((index) => {
-    updatedErrors = performValidation(errors, validations[index], value, property)
+  validations.forEach((validatorItem) => {
+    updatedErrors = performValidation(errors, validatorItem, value, property)
   })
 
   return updatedErrors
