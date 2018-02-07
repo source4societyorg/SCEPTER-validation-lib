@@ -37,7 +37,7 @@ const performValidationFunction = (errors, validatorItem, value, property) => {
 
   updatedErrors[property] = utilities.ifTrueElseDefault(
     utilities.isNotEmpty(updatedErrors[property]),
-    updatedErrors[property] += ` ${validatorItem.invalidMessage}`,
+    `${updatedErrors[property]} ${validatorItem.invalidMessage}`,
     validatorItem.invalidMessage
   )
 
