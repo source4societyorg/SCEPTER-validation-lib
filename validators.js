@@ -6,12 +6,12 @@ const decimal = (value) => !isNaN(parseFloat(value)) && isFinite(value)
 const nonegative = (value) => parseFloat(value) >= 0
 const website = (value) => /^(http|https):\/\/[^ "]+$/.test(value)
 const pdf = (value) => /\.pdf$/.test(value)
-const matchField = (value, value2) => value === value2
+const matchField = (value, value2, values) => value === values[value2]
 const phone = (value) => /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(value)
 const ifOneOf = (value, options) => options.indexOf(value) > -1
 const custom = (value, regex) => regex.test(value)
 
-const validateFieldFunction = (errors, validations, value, property, injectPerformValidation) => {
+const validateFieldFunction = (errors, validations, value, property, values, injectPerformValidation) => {
   const performValidation = utilities.valueOrDefault(injectPerformValidation, performValidationFunction)
   if (utilities.isEmpty(validations)) {
     return errors
@@ -19,17 +19,17 @@ const validateFieldFunction = (errors, validations, value, property, injectPerfo
 
   let updatedErrors = Object.assign({}, errors)
   validations.forEach((validatorItem) => {
-    updatedErrors = performValidation(errors, validatorItem, value, property)
+    updatedErrors = performValidation(errors, validatorItem, value, property, values)
   })
 
   return updatedErrors
 }
 
-const performValidationFunction = (errors, validatorItem, value, property) => {
+const performValidationFunction = (errors, validatorItem, value, property, values) => {
   if ((validatorItem.ifNotEmpty === true && utilities.isEmpty(value)) || (utilities.isEmpty(validatorItem.validator))) {
     return errors
   }
-  if (validatorItem.validator(value, ...utilities.valueOrDefault(validatorItem.parameters, []))) {
+  if (validatorItem.validator(value, ...utilities.valueOrDefault(validatorItem.parameters, []), values)) {
     return errors
   }
 
@@ -48,7 +48,7 @@ const validate = (values, validations, injectValidateField) => {
   const validateField = utilities.valueOrDefault(injectValidateField, validateFieldFunction)
   let errors = {}
   Object.keys(validations).forEach((property) => {
-    errors = validateField(errors, validations[property], values[property], property)
+    errors = validateField(errors, validations[property], values[property], property, values)
   })
   return errors
 }

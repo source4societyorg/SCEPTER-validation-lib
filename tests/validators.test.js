@@ -83,11 +83,12 @@ test('pdf validator returns false when value is not an pdf extension', () => {
 })
 
 test('matchField validator returns false when values do not match', () => {
+  const values = { 'value1': 1, 'value2': 2 }
   const matchField = require('../validators').matchField
-  expect(matchField(1, 2)).toEqual(false)
-  expect(matchField('Test', 'Test2')).toEqual(false)
-  expect(matchField(1, 1)).toEqual(true)
-  expect(matchField('test', 'test')).toEqual(true)
+  expect(matchField(1, 'value2', values)).toEqual(false)
+  expect(matchField('Test', 'value2', values)).toEqual(false)
+  expect(matchField(2, 'value2', values)).toEqual(true)
+  expect(matchField(1, 'value1', values)).toEqual(true)
 })
 
 test('phone validator returns false when value is not a valid 10 digit phone', () => {
@@ -147,7 +148,7 @@ test('validateFieldFunction will iterate through each validator and call perform
   const mockValidations = [{ validator: 'test' }, { validator: 'test2' }]
   const mockPerformValidation = () => { done(); return mockErrors }
 
-  expect(validateFieldFunction(mockErrors, mockValidations, {}, '', mockPerformValidation)).toEqual(mockErrors)
+  expect(validateFieldFunction(mockErrors, mockValidations, {}, '', {}, mockPerformValidation)).toEqual(mockErrors)
 })
 
 test('performValidationFunction will skip validation if ifNotEmpty flag is set on validator and field is empty', () => {

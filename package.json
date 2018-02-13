@@ -1,6 +1,6 @@
 {
   "name": "@source4society/scepter-validation-lib",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Useful validations",
   "main": "validators.js",
   "repository": "git@github.com:source4societyorg/SCEPTER-validation-lib",
@@ -22,6 +22,6 @@
     "jest-cli": "^22.0.4"
   },
   "dependencies": {
-    "@source4society/scepter-utility-lib": "^0.0.23"
+    "@source4society/scepter-utility-lib": "^0.0.24"
   }
 }
