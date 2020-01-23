@@ -1,4 +1,5 @@
-const utilities = require('@source4society/scepter-utility-lib')
+const SCEPTERUtils = require('@source4society/scepter-utility-lib')
+const utilities = new SCEPTERUtils()
 const required = (value) => utilities.isNotEmpty(value)
 const email = (value) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/.test(value)
 const integer = (value) => /^-?(0|[1-9]\d*)$/.test(value)
@@ -6,10 +7,10 @@ const decimal = (value) => !isNaN(parseFloat(value)) && isFinite(value)
 const nonegative = (value) => parseFloat(value) >= 0
 const website = (value) => /^(http|https):\/\/[^ "]+$/.test(value)
 const pdf = (value) => /\.pdf$/.test(value)
-const matchField = (value, value2, values) => value === values[value2]
+const matchField = (value2) => (value, values) => value === values[value2]
 const phone = (value) => /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(value)
-const ifOneOf = (value, options) => options.indexOf(value) > -1
-const custom = (value, regex) => regex.test(value)
+const ifOneOf = (options) => (value) => options.indexOf(value) > -1
+const custom = (regex) => (value) => regex.test(value)
 
 const validateFieldFunction = (errors, validations, value, property, values, injectPerformValidation) => {
   const performValidation = utilities.valueOrDefault(injectPerformValidation, performValidationFunction)
@@ -29,7 +30,7 @@ const performValidationFunction = (errors, validatorItem, value, property, value
   if ((validatorItem.ifNotEmpty === true && utilities.isEmpty(value)) || (utilities.isEmpty(validatorItem.validator))) {
     return errors
   }
-  if (validatorItem.validator(value, ...utilities.valueOrDefault(validatorItem.parameters, []), values)) {
+  if (validatorItem.validator(value, values, ...utilities.valueOrDefault(validatorItem.parameters, []))) {
     return errors
   }
 

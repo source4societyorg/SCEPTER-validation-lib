@@ -50,6 +50,10 @@ The validations object should be a list of field names with arrays of different 
         validator: required,
         invalidMessage: 'Password is required.',
       }],
+      confirmPassword: [{
+        validator: matchField('password'),
+        invalidMessage: 'Password and confirm password must match',
+      }]
       optional: [{
         validatior: integer,
         invalidMessage: 'optional must be an integer.',
@@ -63,3 +67,56 @@ When using with redux-forms, define the validations object beforehand and then p
       form: 'login',
       validate: (values) => validate(values, validations)
     })(LoginForm);
+
+## Validations
+
+### required
+  
+  Validation fails if the field is empty, after all whitespace is trimmed.
+
+### email
+
+  Validation fails if the field does not have an @ sign.
+
+### integer
+
+  Validation fails if the input is not an integer
+
+### decimal
+
+  Validation fails if the input is not a valid decimal
+
+### nonegative
+
+  Validation fails if the input is negative
+
+### website
+
+  Validation fails if the string is not a valid http or https url.
+
+### pdf
+
+  Validation fails if the input does not end in ".pdf"
+
+### matchField
+
+  Must be primed with the key of the field to match first. For example:
+  confirmPassword: matchField('password')
+  Validation fails if the input does not match the input of the field targeted by the key.
+
+### phone
+
+  Validation fails if it does not match a valid phone number (international or US)
+
+### ifOneOf
+
+  Must be primed with an array of options. For example:
+  choices: ifOneOf(['A','B','C'])
+  Validation fails if the input does not exist in the array of options
+
+### custom
+
+  Must be primed with a regular expression. For example:
+  hasSpaces: custom(/' '/g)
+  Validation fails if the regex does not find any match on the input.
+  

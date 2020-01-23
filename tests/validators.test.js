@@ -85,10 +85,11 @@ test('pdf validator returns false when value is not an pdf extension', () => {
 test('matchField validator returns false when values do not match', () => {
   const values = { 'value1': 1, 'value2': 2 }
   const matchField = require('../validators').matchField
-  expect(matchField(1, 'value2', values)).toEqual(false)
-  expect(matchField('Test', 'value2', values)).toEqual(false)
-  expect(matchField(2, 'value2', values)).toEqual(true)
-  expect(matchField(1, 'value1', values)).toEqual(true)
+  const matchFieldValidator = matchField('value2')
+  expect(matchFieldValidator(1, values)).toEqual(false)
+  expect(matchFieldValidator('Test', values)).toEqual(false)
+  expect(matchFieldValidator(2, values)).toEqual(true)
+  expect(matchFieldValidator(1, values)).toEqual(false)
 })
 
 test('phone validator returns false when value is not a valid 10 digit phone', () => {
@@ -105,16 +106,20 @@ test('phone validator returns false when value is not a valid 10 digit phone', (
 
 test('ifOneOf validator returns false if value is not within the list of options', () => {
   const ifOneOf = require('../validators').ifOneOf
-  expect(ifOneOf('123', ['something', 1234, 'else'])).toEqual(false)
-  expect(ifOneOf('123', [])).toEqual(false)
-  expect(ifOneOf('123', ['something', '123', 'else'])).toEqual(true)
+  let ifOneOfValidator = ifOneOf(['something', 1234, 'else'])
+  expect(ifOneOfValidator('123')).toEqual(false)
+  ifOneOfValidator = ifOneOf([])
+  expect(ifOneOfValidator('123')).toEqual(false)
+  ifOneOfValidator = ifOneOf(['something', '123', 'else'])
+  expect(ifOneOfValidator('123', ['something', '123', 'else'])).toEqual(true)
 })
 
 test('Custom validator returns false if regex does not match', () => {
   const custom = require('../validators').custom
-  expect(custom('123', /^\d$/)).toEqual(false)
-  expect(custom(123, /^\d$/)).toEqual(false)
-  expect(custom(1, /^\d$/)).toEqual(true)
+  const customValidator = custom(/^\d$/)
+  expect(customValidator('123')).toEqual(false)
+  expect(customValidator(123)).toEqual(false)
+  expect(customValidator(1)).toEqual(true)
 })
 
 test('validate function will loop through validation object and call validateField on each', (done) => {
