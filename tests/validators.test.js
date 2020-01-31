@@ -124,21 +124,56 @@ test('Custom validator returns false if regex does not match', () => {
 
 test('validate function will loop through validation object and call validateField on each', (done) => {
   const validate = require('../validators').validate
-  const mockValidateField = () => done()
+  const mockValidateField = jest.fn().mockImplementation(() => {
+    done()
+  })
   const validationObject = {
-    someField: [{
-      validator: require('../validators').required
-    }],
-    someOtherField: [{
-      validator: require('../validators').required
-    }]
+    someField: {
+      validations: [{
+        validator: require('../validators').required
+      }]
+    },
+    someOtherField: {
+      validations: [{
+        validator: require('../validators').required
+      }]
+    }
   }
 
   const values = {
     someField: 'value'
   }
 
-  validate(values, validationObject, mockValidateField)
+  validate(values, validationObject, 0, mockValidateField)
+  expect(mockValidateField).toHaveBeenCalledTimes(2)
+})
+
+test('validate function will skip validation based on page attributes when page is nonzero', (done) => {
+  const validate = require('../validators').validate
+  const mockValidateField = jest.fn().mockImplementation(() => {
+    done()
+  })
+  const validationObject = {
+    someField: {
+      validations: [{
+        validator: require('../validators').required
+      }],
+      page: 1
+    },
+    someOtherField: {
+      validations: [{
+        validator: require('../validators').required
+      }],
+      page: 2
+    }
+  }
+
+  const values = {
+    someField: 'value'
+  }
+
+  validate(values, validationObject, 2, mockValidateField)
+  expect(mockValidateField).toHaveBeenCalledTimes(1)
 })
 
 test('validateFieldFunction will return error object if validations object is empty', () => {

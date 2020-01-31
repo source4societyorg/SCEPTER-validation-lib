@@ -1,6 +1,6 @@
 {
   "name": "@source4society/scepter-validation-lib",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Useful validations",
   "main": "validators.js",
   "repository": "git@github.com:source4societyorg/SCEPTER-validation-lib",

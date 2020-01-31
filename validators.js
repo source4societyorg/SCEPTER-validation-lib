@@ -26,7 +26,7 @@ const validateFieldFunction = (errors, validations, value, property, values, inj
   return updatedErrors
 }
 
-const performValidationFunction = (errors, validatorItem, value, property, values) => {
+const performValidationFunction = (errors, validatorItem, value, property, values, usePages = false) => {
   if ((validatorItem.ifNotEmpty === true && utilities.isEmpty(value)) || (utilities.isEmpty(validatorItem.validator))) {
     return errors
   }
@@ -45,11 +45,14 @@ const performValidationFunction = (errors, validatorItem, value, property, value
   return updatedErrors
 }
 
-const validate = (values, validations, injectValidateField) => {
+const validate = (values, validations, page, injectValidateField) => {
+  let pageNumber = utilities.valueOrDefault(page, 0)
   const validateField = utilities.valueOrDefault(injectValidateField, validateFieldFunction)
   let errors = {}
   Object.keys(validations).forEach((property) => {
-    errors = validateField(errors, validations[property], values[property], property, values)
+    if (pageNumber === 0 || pageNumber === validations[property].page) {
+      errors = validateField(errors, validations[property].validations, values[property], property, values)
+    }
   })
   return errors
 }
